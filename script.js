@@ -1,61 +1,55 @@
-let currentState = "start";
+let currentIndex = 0;
 
-function renderQuestion() {
-  const questionEl = document.getElementById("question");
-  const answersEl = document.getElementById("answers");
+const storySequence = [
+    {
+        text: "You wake up in a mysterious forest. Which path will you take?",
+        choices: ["Go left", "Go straight"]
+    },
+    {
+        text: "You encounter a river. What will you do?",
+        choices: ["Swim across", "Build a raft"]
+    },
+    {
+        text: "You find a mysterious cave. Will you enter?",
+        choices: ["Enter the cave", "Walk past it"]
+    },
+    {
+        text: "Adventure continues... The End.",
+        choices: []
+    }
+];
 
-  answersEl.innerHTML = "";
-  function addAnswerButton(text, nextState) {
-    const btn = document.createElement("button");
-    btn.textContent = text;
-    btn.onclick = function () {
-      currentState = nextState;
-      renderQuestion();
-    };
-    answersEl.appendChild(btn);
-  }
+// Render current story
+function renderStory() {
+    const questionEl = document.getElementById("question");
+    const answersEl = document.getElementById("answers");
 
-  switch (currentState) {
-    case "start":
-      questionEl.textContent = "You wake up in a mysterious forest. Which path will you take?";
-      addAnswerButton("Go left", "river");
-      addAnswerButton("Go straight", "cave");
-      break;
+    // Update story text
+    questionEl.textContent = storySequence[currentIndex].text;
 
-    case "river":
-      questionEl.textContent = "You encounter a deep river. What will you do?";
-      addAnswerButton("Swim across", "village");
-      addAnswerButton("Build a raft", "waterfall");
-      break;
+    // Clear old choices
+    answersEl.innerHTML = "";
 
-    case "cave":
-      questionEl.textContent = "You find a mysterious cave. Will you enter?";
-      addAnswerButton("Enter the cave", "treasure");
-      addAnswerButton("Walk past it", "mountain");
-      break;
-
-    // Final endings
-    case "village":
-      questionEl.textContent = "You safely reach a small village. You are saved!";
-      addAnswerButton("Play Again", "start");
-      break;
-
-    case "waterfall":
-      questionEl.textContent = "Oh no! Your raft breaks and you fall down the waterfall. The end.";
-      addAnswerButton("Try Again", "start");
-      break;
-
-    case "treasure":
-      questionEl.textContent = "Inside the cave, you discover a chest of gold! You win!";
-      addAnswerButton("Play Again", "start");
-      break;
-
-    case "mountain":
-      questionEl.textContent = "You walk past and reach a mountain top with a peaceful view. The end.";
-      addAnswerButton("Play Again", "start");
-      break;
-  }
+    // Add new choices as buttons if available
+    storySequence[currentIndex].choices.forEach(choice => {
+        const li = document.createElement("li");
+        const button = document.createElement("button");
+        button.textContent = choice;
+        button.addEventListener("click", nextQuestion); // go to next question when clicked
+        li.appendChild(button);
+        answersEl.appendChild(li);
+    });
 }
 
-// Initialize the game
-document.addEventListener("DOMContentLoaded", renderQuestion);
+// Handle Next button click
+function nextQuestion() {
+    if (currentIndex < storySequence.length - 1) {
+        currentIndex++;
+        renderStory();
+    } else {
+        alert("You have reached the end of the adventure!");
+    }
+}
+
+// Initialize when page loads
+document.addEventListener("DOMContentLoaded", renderStory);
